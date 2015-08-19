@@ -12,6 +12,7 @@ import java.nio.Buffer;
 public class FileLoader {
 
     private static View view;
+    public static BufferedReader br;
 
     public static void main(String[] args) {
         view = new View();
@@ -19,17 +20,17 @@ public class FileLoader {
     }
 
     public static BufferedReader loadFile(File file) {
-        BufferedReader bufferedReader = null;
+        br = null;
         try {
             if (!file.exists()) {
                 JOptionPane.showMessageDialog(null, "Datei nicht gefunden!", "Fehler", JOptionPane.ERROR_MESSAGE);
             } else {
                 FileReader fileReader = new FileReader(file);
-                bufferedReader = new BufferedReader(fileReader);
+                br = new BufferedReader(fileReader);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return bufferedReader;
+        return br;
     }
 }

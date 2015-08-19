@@ -27,10 +27,10 @@ public class FileListener implements ActionListener {
         int rVal = chooser.showOpenDialog(this.getView());
         if (rVal == JFileChooser.APPROVE_OPTION) {
             file = chooser.getSelectedFile();
-            view.setReader(FileLoader.loadFile(file));
+            view.getTextLabel().setText("Loaded: " + file.getName());
+            FileLoader.loadFile(file);
         }
     }
-
 
     public View getView() {
         return view;

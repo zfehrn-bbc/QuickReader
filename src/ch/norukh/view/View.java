@@ -1,24 +1,24 @@
 package ch.norukh.view;
 
 import ch.norukh.listener.FileListener;
+import ch.norukh.listener.StartListener;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.File;
 
 public class View extends JFrame {
 
-    private BufferedReader reader;
-    private Timer timer;
+    public static int speed = 90;
     private JPanel content;
     private JButton toggleButton;
     private JLabel textLabel;
+    private JSlider speedSlider;
 
     public View() {
         this.setTitle("Java QuickReader");
@@ -29,17 +29,14 @@ public class View extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
-        JMenu mnFile = new JMenu("Datei");
+        JMenu mnFile = new JMenu("File");
         menuBar.add(mnFile);
 
-        JMenuItem mntmOpen = new JMenuItem("\u00D6ffnen");
+        JMenuItem mntmOpen = new JMenuItem("Open file");
         mntmOpen.addActionListener(new FileListener(this));
         mnFile.add(mntmOpen);
 
-        JMenuItem mntmPrint = new JMenuItem("Drucken");
-        mnFile.add(mntmPrint);
-
-        JMenuItem mntmExit = new JMenuItem("Beenden");
+        JMenuItem mntmExit = new JMenuItem("Exit");
         mntmExit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -68,49 +65,7 @@ public class View extends JFrame {
         loadSliderview(sliderview);
         content.add(sliderview, BorderLayout.SOUTH);
 
-        class Prozess extends TimerTask {
-
-            @Override
-            public void run() {
-                if (reader != null) {
-                    renewWord();
-                }
-            }
-        }
-
-        // Thread starten für den Chat
-        toggleButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (toggleButton.getText().equals(">")) {
-                    toggleButton.setText("||");
-                    setTimer(new Timer());
-                    getTimer().schedule(new Prozess(), 0, 1000);
-                } else if (toggleButton.getText().equals("||")) {
-                    toggleButton.setText(">");
-                    getTimer().cancel();
-                    textLabel.setText("Datei \u00F6ffnen");
-                }
-            }
-        });
-    }
-
-    private void renewWord() {
-        try {
-            BufferedReader br = this.getReader();
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] words = line.split("\\s+");
-                for (int i = 0; i < words.length; i++) {
-                    Thread.sleep(100);
-                    textLabel.setText(words[i]);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        toggleButton.addActionListener(new StartListener(this, toggleButton, textLabel, speedSlider));
     }
 
     private void loadControls(JPanel controls) {
@@ -119,7 +74,7 @@ public class View extends JFrame {
     }
 
     private void loadTextview(JPanel controls) {
-        textLabel = new JLabel("Datei \u00F6ffnen");
+        textLabel = new JLabel("Open a txt file");
         textLabel.setFont(new Font("Arial", Font.PLAIN, 30));
         controls.add(Box.createHorizontalGlue());
         controls.add(textLabel);
@@ -127,42 +82,27 @@ public class View extends JFrame {
     }
 
     private void loadSliderview(JPanel controls) {
-        JSlider speedSlider = new JSlider();
-        speedSlider.setMinimum(0);
-        speedSlider.setMaximum(30);
+        speedSlider = new JSlider();
+        speedSlider.setMinimum(80);
+        speedSlider.setMaximum(200);
 
         speedSlider.setMajorTickSpacing(5);
         speedSlider.setMinorTickSpacing(1);
 
-        // Standardmarkierungen werden erzeugt
-        speedSlider.createStandardLabels(1);
-
-        // Zeichnen der Markierungen wird aktiviert
-        speedSlider.setPaintTicks(true);
-
-        // Zeichnen der Labels wird aktiviert
-        speedSlider.setPaintLabels(true);
-
         // Schiebebalken wird auf den Wert 9 gesetzt
-        speedSlider.setValue(9);
+        speedSlider.setValue(90);
+
+        speedSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                speed = speedSlider.getValue();
+            }
+        });
 
         controls.add(speedSlider);
     }
 
-    public Timer getTimer() {
-        return timer;
+    public JLabel getTextLabel() {
+        return textLabel;
     }
-
-    public void setTimer(Timer timer) {
-        this.timer = timer;
-    }
-
-    public BufferedReader getReader() {
-        return reader;
-    }
-
-    public void setReader(BufferedReader reader) {
-        this.reader = reader;
-    }
-
 }
