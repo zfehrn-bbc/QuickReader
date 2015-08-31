@@ -22,7 +22,7 @@ public class View extends JFrame {
 
     public View() {
         this.setTitle("Java QuickReader");
-        this.setResizable(false);
+        this.setResizable(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(400, 300);
 
